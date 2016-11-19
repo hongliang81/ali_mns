@@ -3,19 +3,135 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"time"
 
-	"github.com/gogap/ali_mns"
+	"github.com/hongliang81/ali_mns"
+	"fmt"
+	"net/http"
+	"time"
 	"github.com/gogap/logs"
+	"sync"
+	"encoding/base64"
 )
 
 type appConf struct {
 	Url             string `json:"url"`
+	Host		string `json:"host"`
+	Region		string `json:"region"`
+	AccountId	string `json:"accountid"`
 	AccessKeyId     string `json:"access_key_id"`
 	AccessKeySecret string `json:"access_key_secret"`
 }
 
 func main() {
+
+	//QueueExample()
+
+	TopicExample()
+}
+
+func TopicExample() {
+	conf := appConf{}
+
+	if bFile, e := ioutil.ReadFile("app.conf"); e != nil {
+		panic(e)
+	} else {
+		if e := json.Unmarshal(bFile, &conf); e != nil {
+			panic(e)
+		}
+	}
+
+	// Topic Management
+
+	topicManager := ali_mns.NewMNSTopicManager(conf.AccountId, conf.AccessKeyId, conf.AccessKeySecret)
+	err := topicManager.CreateTopic(ali_mns.Beijing, "topic-test", 65536)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	err = topicManager.SetTopicAttributes(ali_mns.Beijing, "topic-test", 65534)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	attr, err := topicManager.GetTopicAttributes(ali_mns.Beijing, "topic-test")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Printf("%+v\n", attr)
+	}
+
+	topics, err := topicManager.ListTopic(ali_mns.Beijing, "", 0, "topic-")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Printf("%+v\n", topics)
+	}
+
+	err = topicManager.DeleteTopic(ali_mns.Beijing, "topic-test")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("Topic [topic-test] deleted")
+	}
+
+	// Topic Subscription
+
+	// Create Endpoint, Listen on port 8080
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		http.HandleFunc("/notifications", func(w http.ResponseWriter, r *http.Request) {
+
+			var msg ali_mns.TopicNotification
+			ali_mns.ParseNotification(ali_mns.NewAliMNSDecoder(), r, &msg)
+
+			fmt.Printf("receive notification[\n%+v\n", msg)
+
+			wg.Done()
+		})
+		http.ListenAndServe(":8080", nil)
+	}()
+
+	// Create Topic
+	err = topicManager.CreateTopic(ali_mns.Beijing, "topic-test", 65536)
+
+	// Subscribe to Topic
+	err = topicManager.Subscribe(ali_mns.Beijing,
+		"topic-test",
+		"",
+		fmt.Sprintf("http://%s:8080/notifications", conf.Host),
+		"topic-test")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("Subscription created successfully")
+	}
+
+	// Send Topic Message
+	client := ali_mns.NewAliMNSClient(conf.Url,
+		conf.AccessKeyId,
+		conf.AccessKeySecret)
+
+	topic := ali_mns.NewMNSTopic("topic-test", client)
+
+	msg := ali_mns.TopicMessageSendRequest{
+		MessageBody:	[]byte("hello ali_mns"),
+		MessageTag:	"",
+	}
+	resp, err := topic.SendMessage(msg)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Printf("%+v\n", resp)
+	}
+
+	// Wait for receive
+	wg.Wait()
+
+	err = topicManager.DeleteTopic(ali_mns.Beijing, "topic-test")
+}
+
+func QueueExample() {
 	conf := appConf{}
 
 	if bFile, e := ioutil.ReadFile("app.conf"); e != nil {

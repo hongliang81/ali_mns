@@ -22,3 +22,8 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+.idea
+ali_mns.iml
+
+example/app.conf
