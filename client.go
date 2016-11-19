@@ -214,6 +214,8 @@ func initMNSErrors() {
 		"SignatureDoesNotMatch":      ERR_MNS_SIGNATURE_DOES_NOT_MATCH,
 		"TimeExpired":                ERR_MNS_TIME_EXPIRED,
 		"QpsLimitExceeded":           ERR_MNS_QPS_LIMIT_EXCEEDED,
+		"TopicAlreadyExist":		ERR_MNS_TOPIC_ALREADY_EXIST,
+		"TopicNameLengthError":		ERR_MNS_TOPIC_NAME_LENGTH_ERROR,
 	}
 }
 

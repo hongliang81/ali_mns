@@ -16,6 +16,10 @@ const (
 	Hangzhou  MNSLocation = "cn-hangzhou"
 	Qingdao   MNSLocation = "cn-qingdao"
 	Singapore MNSLocation = "ap-southeast-1"
+	BeijingInternal   MNSLocation = "cn-beijing-internal"
+	HangzhouInternal  MNSLocation = "cn-hangzhou-internal"
+	QingdaoInternal   MNSLocation = "cn-qingdao-internal"
+	SingaporeInternal MNSLocation = "ap-southeast-1-internal"
 )
 
 type AliQueueManager interface {
