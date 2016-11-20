@@ -61,6 +61,17 @@ func main() {
 
 	// Topic Subscription
 
+	err = topicManager.Subscribe(ali_mns.Beijing,
+		"testSub",
+		//fmt.Sprintf("acs:mns:%s:%s:queues/%s", ali_mns.Beijing, "1340859151301362", "testSub"),
+		fmt.Sprintf("mail:directmail:{hongliang@neusoft.com}"),
+		"testSub")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("Subscription created successfully")
+	}
+
 	client := ali_mns.NewAliMNSClient(conf.Url,
 		conf.AccessKeyId,
 		conf.AccessKeySecret)
@@ -77,6 +88,7 @@ func main() {
 	} else {
 		fmt.Printf("%+v\n", resp)
 	}
+
 
 	//msg := ali_mns.MessageSendRequest{
 	//	MessageBody:  []byte("hello gogap/ali_mns"),

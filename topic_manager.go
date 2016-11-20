@@ -15,6 +15,7 @@ type AliTopicManager interface {
 	GetTopicAttributes(location MNSLocation, topicName string) (attr TopicAttribute, err error)
 	DeleteTopic(location MNSLocation, topicName string) (err error)
 	ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (topics Topics, err error)
+	Subscribe(location MNSLocation, topicName string, endpoint string, subscriptionName string) (err error)
 }
 
 type MNSTopicManager struct {
@@ -185,6 +186,32 @@ func (p *MNSTopicManager) ListTopic(location MNSLocation, nextMarker string, ret
 	}
 
 	_, err = send(cli, p.decoder, GET, header, nil, "topics", &topics)
+
+	return
+}
+
+func (p *MNSTopicManager) Subscribe(location MNSLocation, topicName string, endpoint string, subscriptionName string) (err error) {
+
+	topicName = strings.TrimSpace(topicName)
+
+	if err = checkTopicName(topicName); err != nil {
+		return
+	}
+
+	// TODO checkEndpoint
+
+	// TODO checksubscriptionName
+
+	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+
+	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
+
+	msg := TopicSubscribeRequest{
+		Endpoint:	endpoint,
+		FilterTag:	string("test_tag"),
+	}
+
+	_, err = send(cli, p.decoder, PUT, nil, msg, fmt.Sprintf("topics/%s/subscriptions/%s", topicName, subscriptionName), nil)
 
 	return
 }
