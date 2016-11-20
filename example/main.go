@@ -36,6 +36,13 @@ func main() {
 		fmt.Println(err.Error())
 	}
 
+	attr, err := topic.GetTopicAttributes(ali_mns.Beijing, "test")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Printf("%+v\n", attr)
+	}
+
 	//client := ali_mns.NewAliMNSClient(conf.Url,
 	//	conf.AccessKeyId,
 	//	conf.AccessKeySecret)

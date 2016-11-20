@@ -20,7 +20,7 @@ const (
 type AliTopicManager interface {
 	CreateTopic(location MNSLocation, topicName string, maxMessageSize int32) (err error)
 	SetTopicAttributes(location MNSLocation, topicName string, maxMessageSize int32) (err error)
-	//GetTopicAttributes(location MNSLocation, queueName string) (attr QueueAttribute, err error)
+	GetTopicAttributes(location MNSLocation, topicName string) (attr TopicAttribute, err error)
 	//DeleteTopic(location MNSLocation, queueName string) (err error)
 	//ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (queues Queues, err error)
 }
@@ -163,22 +163,22 @@ func (p *MNSTopicManager) SetTopicAttributes(location MNSLocation, topicName str
 	return
 }
 
-//func (p *MNSQueueManager) GetQueueAttributes(location MNSLocation, queueName string) (attr QueueAttribute, err error) {
-//	queueName = strings.TrimSpace(queueName)
-//
-//	if err = checkQueueName(queueName); err != nil {
-//		return
-//	}
-//
-//	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
-//
-//	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
-//
-//	_, err = send(cli, p.decoder, GET, nil, nil, "queues/"+queueName, &attr)
-//
-//	return
-//}
-//
+func (p *MNSTopicManager) GetTopicAttributes(location MNSLocation, topicName string) (attr TopicAttribute, err error) {
+	topicName = strings.TrimSpace(topicName)
+
+	if err = checkTopicName(topicName); err != nil {
+		return
+	}
+
+	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+
+	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
+
+	_, err = send(cli, p.decoder, GET, nil, nil, "topics/"+ topicName, &attr)
+
+	return
+}
+
 //func (p *MNSQueueManager) DeleteQueue(location MNSLocation, queueName string) (err error) {
 //	queueName = strings.TrimSpace(queueName)
 //

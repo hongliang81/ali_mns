@@ -75,22 +75,17 @@ type CreateTopicRequest struct {
 //	ReceiptHandle   string   `xml:"ReceiptHandle" json:"receipt_handle"`
 //	NextVisibleTime int64    `xml:"NextVisibleTime" json:"next_visible_time"`
 //}
-//
-//type QueueAttribute struct {
-//	XMLName                xml.Name `xml:"Queue" json:"-"`
-//	QueueName              string   `xml:"QueueName,omitempty" json:"queue_name,omitempty"`
-//	DelaySeconds           int32    `xml:"DelaySenconds,omitempty" json:"delay_senconds,omitempty"`
-//	MaxMessageSize         int32    `xml:"MaximumMessageSize,omitempty" json:"maximum_message_size,omitempty"`
-//	MessageRetentionPeriod int32    `xml:"MessageRetentionPeriod,omitempty" json:"message_retention_period,omitempty"`
-//	VisibilityTimeout      int32    `xml:"VisibilityTimeout,omitempty" json:"visibility_timeout,omitempty"`
-//	PollingWaitSeconds     int32    `xml:"PollingWaitSeconds,omitempty" json:"polling_wait_secods,omitempty"`
-//	ActiveMessages         int64    `xml:"ActiveMessages,omitempty" json:"active_messages,omitempty"`
-//	InactiveMessages       int64    `xml:"InactiveMessages,omitempty" json:"inactive_messages,omitempty"`
-//	DelayMessages          int64    `xml:"DelayMessages,omitempty" json:"delay_messages,omitempty"`
-//	CreateTime             int64    `xml:"CreateTime,omitempty" json:"create_time,omitempty"`
-//	LastModifyTime         int64    `xml:"LastModifyTime,omitempty" json:"last_modify_time,omitempty"`
-//}
-//
+
+type TopicAttribute struct {
+	XMLName                xml.Name `xml:"Topic" json:"-"`
+	QueueName              string   `xml:"TopicName,omitempty" json:"topic_name,omitempty"`
+	CreateTime             int64    `xml:"CreateTime,omitempty" json:"create_time,omitempty"`
+	LastModifyTime         int64    `xml:"LastModifyTime,omitempty" json:"last_modify_time,omitempty"`
+	MaxMessageSize         int32    `xml:"MaximumMessageSize,omitempty" json:"maximum_message_size,omitempty"`
+	MessageRetentionPeriod int32    `xml:"MessageRetentionPeriod,omitempty" json:"message_retention_period,omitempty"`
+	MessageCount		int64	`xml:"MessageCount,omitempty" json:"message_count,omitempty"`
+}
+
 //type Queue struct {
 //	QueueURL string `xml:"QueueURL" json:"url"`
 //}
