@@ -50,6 +50,13 @@ func main() {
 		fmt.Printf("%+v\n", topics)
 	}
 
+	err = topic.DeleteTopic(ali_mns.Beijing, "test")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("Topic [test] deleted\n")
+	}
+
 	//client := ali_mns.NewAliMNSClient(conf.Url,
 	//	conf.AccessKeyId,
 	//	conf.AccessKeySecret)
