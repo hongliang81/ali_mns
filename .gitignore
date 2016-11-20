@@ -25,3 +25,5 @@ _testmain.go
 
 .idea
 ali_mns.iml
+
+example/app.conf
