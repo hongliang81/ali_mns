@@ -25,41 +25,58 @@ func main() {
 		}
 	}
 
-	topic := ali_mns.NewMNSTopicManager("1340859151301362", conf.AccessKeyId, conf.AccessKeySecret)
-	err := topic.CreateTopic(ali_mns.Beijing, "test", 65536)
+	// Topic Management
+
+	topicManager := ali_mns.NewMNSTopicManager("1340859151301362", conf.AccessKeyId, conf.AccessKeySecret)
+	err := topicManager.CreateTopic(ali_mns.Beijing, "test", 65536)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	err = topic.SetTopicAttributes(ali_mns.Beijing, "test", 65534)
+	err = topicManager.SetTopicAttributes(ali_mns.Beijing, "test", 65534)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	attr, err := topic.GetTopicAttributes(ali_mns.Beijing, "test")
+	attr, err := topicManager.GetTopicAttributes(ali_mns.Beijing, "test")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Printf("%+v\n", attr)
 	}
 
-	topics, err := topic.ListTopic(ali_mns.Beijing, "", 0, "te")
+	topics, err := topicManager.ListTopic(ali_mns.Beijing, "", 0, "te")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Printf("%+v\n", topics)
 	}
 
-	err = topic.DeleteTopic(ali_mns.Beijing, "test")
+	err = topicManager.DeleteTopic(ali_mns.Beijing, "test")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Println("Topic [test] deleted\n")
 	}
 
-	//client := ali_mns.NewAliMNSClient(conf.Url,
-	//	conf.AccessKeyId,
-	//	conf.AccessKeySecret)
+	// Topic Subscription
+
+	client := ali_mns.NewAliMNSClient(conf.Url,
+		conf.AccessKeyId,
+		conf.AccessKeySecret)
+
+	topic := ali_mns.NewMNSTopic("testSub", client)
+
+	msg := ali_mns.TopicMessageSendRequest{
+		MessageBody:	[]byte("hello ali_mns"),
+		MessageTag:	string("no tag"),
+	}
+	resp, err := topic.SendMessage(msg)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Printf("%+v\n", resp)
+	}
 
 	//msg := ali_mns.MessageSendRequest{
 	//	MessageBody:  []byte("hello gogap/ali_mns"),

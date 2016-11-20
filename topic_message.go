@@ -3,15 +3,15 @@ package ali_mns
 import (
 	"encoding/xml"
 )
-//
-//type MessageResponse struct {
-//	XMLName   xml.Name `xml:"Message" json:"-"`
-//	Code      string   `xml:"Code,omitempty" json:"code,omitempty"`
-//	Message   string   `xml:"Message,omitempty" json:"message,omitempty"`
-//	RequestId string   `xml:"RequestId,omitempty" json:"request_id,omitempty"`
-//	HostId    string   `xml:"HostId,omitempty" json:"host_id,omitempty"`
-//}
-//
+
+type TopicMessageResponse struct {
+	XMLName   xml.Name `xml:"Message" json:"-"`
+	Code      string   `xml:"Code,omitempty" json:"code,omitempty"`
+	Message   string   `xml:"Message,omitempty" json:"message,omitempty"`
+	RequestId string   `xml:"RequestId,omitempty" json:"request_id,omitempty"`
+	HostId    string   `xml:"HostId,omitempty" json:"host_id,omitempty"`
+}
+
 //type ErrorMessageResponse struct {
 //	XMLName   xml.Name `xml:"Error" json:"-"`
 //	Code      string   `xml:"Code,omitempty" json:"code,omitempty"`
@@ -20,13 +20,12 @@ import (
 //	HostId    string   `xml:"HostId,omitempty" json:"host_id,omitempty"`
 //}
 //
-//type MessageSendRequest struct {
-//	XMLName      xml.Name    `xml:"Message"`
-//	MessageBody  Base64Bytes `xml:"MessageBody"`
-//	DelaySeconds int64       `xml:"DelaySeconds"`
-//	Priority     int64       `xml:"Priority"`
-//}
-//
+type TopicMessageSendRequest struct {
+	XMLName      xml.Name    `xml:"Message" json:"message"`
+	MessageBody  Base64Bytes `xml:"MessageBody" json:"message_body"`
+	MessageTag   string      `xml:"MessageTag" json:"message_tag"`
+}
+
 //type BatchMessageSendRequest struct {
 //	XMLName  xml.Name             `xml:"Messages"`
 //	Messages []MessageSendRequest `xml:"Message"`
@@ -36,13 +35,13 @@ import (
 //	XMLName        xml.Name `xml:"ReceiptHandles"`
 //	ReceiptHandles []string `xml:"ReceiptHandle"`
 //}
-//
-//type MessageSendResponse struct {
-//	MessageResponse
-//	MessageId      string `xml:"MessageId" json:"message_id"`
-//	MessageBodyMD5 string `xml:"MessageBodyMD5" json:"message_body_md5"`
-//}
-//
+
+type TopicMessageSendResponse struct {
+	TopicMessageResponse
+	MessageId      string `xml:"MessageId" json:"message_id"`
+	MessageBodyMD5 string `xml:"MessageBodyMD5" json:"message_body_md5"`
+}
+
 //type BatchMessageSendResponse struct {
 //	XMLName  xml.Name              `xml:"Messages" json:"-"`
 //	Messages []MessageSendResponse `xml:"Message" json:"messages"`
