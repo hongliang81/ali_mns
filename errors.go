@@ -66,4 +66,5 @@ var (
 	ERR_MNS_TOPIC_ALREADY_EXIST_AND_HAVE_SAME_ATTR	= errors.TN(ALI_MNS_ERR_NS, 151, "mns topic already exist, and the attribute is the same, topic name: {{.name}}")
 	ERR_MNS_TOPIC_ALREADY_EXIST                    = errors.TN(ALI_MNS_ERR_NS, 152, "mns topic already exist, and the attribute is the same, topic name: {{.name}}")
 	ERR_MNS_TOPIC_NAME_LENGTH_ERROR			= errors.TN(ALI_MNS_ERR_NS, 153, "topic name length is out of range, should be between 1 and 256. topic name:{{.name}}")
+	REE_MNS_GET_TOPIC_RET_NUMBER_RANGE_ERROR       = errors.TN(ALI_MNS_ERR_NS, 154, "get topic list param of ret number is not in range of (1~1000)")
 )

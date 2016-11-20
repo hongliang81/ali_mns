@@ -86,16 +86,16 @@ type TopicAttribute struct {
 	MessageCount		int64	`xml:"MessageCount,omitempty" json:"message_count,omitempty"`
 }
 
-//type Queue struct {
-//	QueueURL string `xml:"QueueURL" json:"url"`
-//}
-//
-//type Queues struct {
-//	XMLName    xml.Name `xml:"Queues" json:"-"`
-//	Queues     []Queue  `xml:"Queue" json:"queues"`
-//	NextMarker string   `xml:"NextMarker" json:"next_marker"`
-//}
-//
+type Topic struct {
+	TopicURL string `xml:"TopicURL" json:"url"`
+}
+
+type Topics struct {
+	XMLName    xml.Name `xml:"Topics" json:"-"`
+	Topics     []Topic  `xml:"Topic" json:"topics"`
+	NextMarker string   `xml:"NextMarker" json:"next_marker"`
+}
+
 //type Base64Bytes []byte
 //
 //func (p Base64Bytes) MarshalXML(e *xml.Encoder, start xml.StartElement) error {

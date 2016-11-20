@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gogap/errors"
+	"strconv"
 )
 
 //type MNSLocation string
@@ -22,7 +23,7 @@ type AliTopicManager interface {
 	SetTopicAttributes(location MNSLocation, topicName string, maxMessageSize int32) (err error)
 	GetTopicAttributes(location MNSLocation, topicName string) (attr TopicAttribute, err error)
 	//DeleteTopic(location MNSLocation, queueName string) (err error)
-	//ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (queues Queues, err error)
+	ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (topics Topics, err error)
 }
 
 type MNSTopicManager struct {
@@ -194,37 +195,37 @@ func (p *MNSTopicManager) GetTopicAttributes(location MNSLocation, topicName str
 //
 //	return
 //}
-//
-//func (p *MNSQueueManager) ListQueue(location MNSLocation, nextMarker string, retNumber int32, prefix string) (queues Queues, err error) {
-//
-//	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
-//
-//	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
-//
-//	header := map[string]string{}
-//
-//	marker := strings.TrimSpace(nextMarker)
-//	if len(marker) > 0 {
-//		if marker != "" {
-//			header["x-mns-marker"] = marker
-//		}
-//	}
-//
-//	if retNumber > 0 {
-//		if retNumber >= 1 && retNumber <= 1000 {
-//			header["x-mns-ret-number"] = strconv.Itoa(int(retNumber))
-//		} else {
-//			err = REE_MNS_GET_QUEUE_RET_NUMBER_RANGE_ERROR.New()
-//			return
-//		}
-//	}
-//
-//	prefix = strings.TrimSpace(prefix)
-//	if prefix != "" {
-//		header["x-mns-prefix"] = prefix
-//	}
-//
-//	_, err = send(cli, p.decoder, GET, header, nil, "queues", &queues)
-//
-//	return
-//}
+
+func (p *MNSTopicManager) ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (topics Topics, err error) {
+
+	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+
+	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
+
+	header := map[string]string{}
+
+	marker := strings.TrimSpace(nextMarker)
+	if len(marker) > 0 {
+		if marker != "" {
+			header["x-mns-marker"] = marker
+		}
+	}
+
+	if retNumber > 0 {
+		if retNumber >= 1 && retNumber <= 1000 {
+			header["x-mns-ret-number"] = strconv.Itoa(int(retNumber))
+		} else {
+			err = REE_MNS_GET_TOPIC_RET_NUMBER_RANGE_ERROR.New()
+			return
+		}
+	}
+
+	prefix = strings.TrimSpace(prefix)
+	if prefix != "" {
+		header["x-mns-prefix"] = prefix
+	}
+
+	_, err = send(cli, p.decoder, GET, header, nil, "topics", &topics)
+
+	return
+}

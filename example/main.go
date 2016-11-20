@@ -43,6 +43,13 @@ func main() {
 		fmt.Printf("%+v\n", attr)
 	}
 
+	topics, err := topic.ListTopic(ali_mns.Beijing, "", 0, "te")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Printf("%+v\n", topics)
+	}
+
 	//client := ali_mns.NewAliMNSClient(conf.Url,
 	//	conf.AccessKeyId,
 	//	conf.AccessKeySecret)
