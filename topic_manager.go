@@ -19,7 +19,7 @@ const (
 
 type AliTopicManager interface {
 	CreateTopic(location MNSLocation, topicName string, maxMessageSize int32) (err error)
-	//SetTopicAttributes(location MNSLocation, queueName string, delaySeconds int32, maxMessageSize int32, messageRetentionPeriod int32, visibilityTimeout int32, pollingWaitSeconds int32) (err error)
+	SetTopicAttributes(location MNSLocation, topicName string, maxMessageSize int32) (err error)
 	//GetTopicAttributes(location MNSLocation, queueName string) (attr QueueAttribute, err error)
 	//DeleteTopic(location MNSLocation, queueName string) (err error)
 	//ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (queues Queues, err error)
@@ -139,38 +139,30 @@ func (p *MNSTopicManager) CreateTopic(location MNSLocation, topicName string, ma
 
 	return
 }
-//
-//func (p *MNSQueueManager) SetQueueAttributes(location MNSLocation, queueName string, delaySeconds int32, maxMessageSize int32, messageRetentionPeriod int32, visibilityTimeout int32, pollingWaitSeconds int32) (err error) {
-//	queueName = strings.TrimSpace(queueName)
-//
-//	if err = checkQueueName(queueName); err != nil {
-//		return
-//	}
-//
-//	if err = checkAttributes(delaySeconds,
-//		maxMessageSize,
-//		messageRetentionPeriod,
-//		visibilityTimeout,
-//		pollingWaitSeconds); err != nil {
-//		return
-//	}
-//
-//	message := CreateQueueRequest{
-//		DelaySeconds:           delaySeconds,
-//		MaxMessageSize:         maxMessageSize,
-//		MessageRetentionPeriod: messageRetentionPeriod,
-//		VisibilityTimeout:      visibilityTimeout,
-//		PollingWaitSeconds:     pollingWaitSeconds,
-//	}
-//
-//	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
-//
-//	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
-//
-//	_, err = send(cli, p.decoder, PUT, nil, &message, fmt.Sprintf("queues/%s?metaoverride=true", queueName), nil)
-//	return
-//}
-//
+
+func (p *MNSTopicManager) SetTopicAttributes(location MNSLocation, topicName string, maxMessageSize int32) (err error) {
+	topicName = strings.TrimSpace(topicName)
+
+	if err = checkQueueName(topicName); err != nil {
+		return
+	}
+
+	if err = checkTopicAttributes(maxMessageSize); err != nil {
+		return
+	}
+
+	message := CreateTopicRequest{
+		MaxMessageSize:         maxMessageSize,
+	}
+
+	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+
+	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
+
+	_, err = send(cli, p.decoder, PUT, nil, &message, fmt.Sprintf("topics/%s?metaoverride=true", topicName), nil)
+	return
+}
+
 //func (p *MNSQueueManager) GetQueueAttributes(location MNSLocation, queueName string) (attr QueueAttribute, err error) {
 //	queueName = strings.TrimSpace(queueName)
 //

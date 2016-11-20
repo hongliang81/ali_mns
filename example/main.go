@@ -28,7 +28,12 @@ func main() {
 	topic := ali_mns.NewMNSTopicManager("1340859151301362", conf.AccessKeyId, conf.AccessKeySecret)
 	err := topic.CreateTopic(ali_mns.Beijing, "test", 65536)
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Println(err.Error())
+	}
+
+	err = topic.SetTopicAttributes(ali_mns.Beijing, "test", 65534)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 
 	//client := ali_mns.NewAliMNSClient(conf.Url,
