@@ -10,9 +10,6 @@ import (
 	"encoding/pem"
 	"crypto/x509"
 	"sort"
-	"crypto/rsa"
-	"crypto/rand"
-	"bytes"
 )
 
 var (
@@ -128,6 +125,11 @@ func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode in
 
 	p, _ := pem.Decode(block)
 	cert, err := x509.ParseCertificate(p.Bytes)
+	if err != nil {
+		fmt.Printf("生成证书失败\n")
+		return
+	}
+
 
 	// Authorization解密
 	sig2Check, err := base64.StdEncoding.DecodeString(authorization)
@@ -136,16 +138,8 @@ func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode in
 		return
 	}
 
-	if _, ok := cert.PublicKey.(*rsa.PublicKey); !ok {
-		fmt.Printf("密钥不对啊\n")
-		return
-	}
-
-	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, cert.PublicKey.(*rsa.PublicKey), []byte(str2Sign))
-	fmt.Printf("Authorization解密后[%s], err[%v]\n", encrypted, err)
-
-	res := bytes.Compare(sig2Check, encrypted)
-	fmt.Printf("比较结果[%d]\n", res)
+	err = cert.CheckSignature(x509.SHA1WithRSA, []byte(str2Sign), sig2Check)
+	fmt.Printf("校验结果[%v]\n", err)
 
 	// 认证
 
