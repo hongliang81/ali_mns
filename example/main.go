@@ -87,10 +87,6 @@ func TopicExample() {
 
 			fmt.Printf("receive notification[\n%+v\n", msg)
 
-			var body []byte = make([]byte, 0, 1024)
-			_, _ = base64.StdEncoding.Decode(body, msg.Message)
-			fmt.Printf("body[%s]\n", body)
-
 			wg.Done()
 		})
 		http.ListenAndServe(":8080", nil)
