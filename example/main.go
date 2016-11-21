@@ -6,6 +6,8 @@ import (
 
 	"github.com/hongliang81/ali_mns"
 	"fmt"
+	"net/http"
+	"time"
 )
 
 type appConf struct {
@@ -61,18 +63,16 @@ func main() {
 	}
 
 	// Topic Subscription
-	err = topicManager.CreateTopic(ali_mns.Beijing, "testSub", 65536)
 
-	err = topicManager.Subscribe(ali_mns.Beijing,
-		"testSub",
-		"",
-		string("mail:directmail:{hongliang@neusoft.com}"),
-		"testSub")
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		fmt.Println("Subscription created successfully")
-	}
+	// Create Endpoint, Listen on 80 port
+	http.HandleFunc("/notifications", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("in handler func")
+		ali_mns.ParseNotification(r.Method, r.Header, r.RequestURI)
+	})
+	http.ListenAndServe(":80", nil)
+
+	// Create Topic
+	err = topicManager.CreateTopic(ali_mns.Beijing, "testSub", 65536)
 
 	client := ali_mns.NewAliMNSClient(conf.Url,
 		conf.AccessKeyId,
@@ -80,6 +80,19 @@ func main() {
 
 	topic := ali_mns.NewMNSTopic("testSub", client)
 
+	// Subscribe to Topic
+	err = topicManager.Subscribe(ali_mns.Beijing,
+		"testSub",
+		"",
+		string("http://123.56.200.181/notifications"),
+		"testSub")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("Subscription created successfully")
+	}
+
+	// Send Topic Message
 	msg := ali_mns.TopicMessageSendRequest{
 		MessageBody:	[]byte("hello ali_mns"),
 		MessageTag:	"",
@@ -91,6 +104,10 @@ func main() {
 		fmt.Printf("%+v\n", resp)
 	}
 
+	// Wait for receive
+	for {
+		time.Sleep(time.Second)
+	}
 
 	//msg := ali_mns.MessageSendRequest{
 	//	MessageBody:  []byte("hello gogap/ali_mns"),

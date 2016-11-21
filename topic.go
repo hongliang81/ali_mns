@@ -16,7 +16,6 @@ var (
 type AliMNSTopic interface {
 	Name() string
 	SendMessage(message TopicMessageSendRequest) (resp TopicMessageSendResponse, err error)
-	ParseNotification(method string, headers map[string]string, resource string) (statusCode int, err error)
 }
 
 type MNSTopic struct {
@@ -71,11 +70,11 @@ func (p *MNSTopic) SendMessage(message TopicMessageSendRequest) (resp TopicMessa
 }
 
 // Decode incoming Notification from Topic mode
-func (p *MNSTopic) ParseNotification(method string, headers map[string]string, resource string) (statusCode int, err error) {
+func ParseNotification(method string, headers map[string][]string, resource string) (statusCode int, err error) {
 
 	// 获取X509证书
 	var url string
-	if url = headers["x-mns-signing-cert-url"]; url == "" {
+	if url = headers["x-mns-signing-cert-url"][0]; url == "" {
 		// TODO
 		return
 	}
