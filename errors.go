@@ -72,5 +72,5 @@ var (
 	ERR_MNS_SUBSCRIPTION_NAME_IS_TOO_LONG		= errors.TN(ALI_MNS_ERR_NS, 157, "subscription name is too long, the max length is 256")
 
 	ERR_DECODE_URL_FAILED				= errors.TN(ALI_MNS_ERR_NS, 158, "decode URL failed, {{.err}}, url: \"{{.url}}\"")
-	ERR_UNMARSHAL_NOTIFICATION_FAILED		= errors.TN(ALI_MNS_ERR_NS, 158, "unmarshal notification failed, {{.err}}")
+	ERR_UNMARSHAL_NOTIFICATION_FAILED		= errors.TN(ALI_MNS_ERR_NS, 159, "unmarshal notification failed, {{.err}}")
 )
