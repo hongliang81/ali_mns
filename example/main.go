@@ -10,6 +10,7 @@ import (
 	"time"
 	"github.com/gogap/logs"
 	"sync"
+	"encoding/base64"
 )
 
 type appConf struct {
@@ -120,7 +121,10 @@ func TopicExample() {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
+		var body []byte = make([]byte, 0, 1024)
+		_, _ = base64.StdEncoding.Decode(body, resp.Message)
 		fmt.Printf("%+v\n", resp)
+		fmt.Printf("body[%s]\n", body)
 	}
 
 	// Wait for receive
