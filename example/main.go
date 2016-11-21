@@ -23,7 +23,7 @@ type appConf struct {
 
 func main() {
 
-	QueueExample()
+	//QueueExample()
 
 	TopicExample()
 }
@@ -42,35 +42,35 @@ func TopicExample() {
 	// Topic Management
 
 	topicManager := ali_mns.NewMNSTopicManager(conf.AccountId, conf.AccessKeyId, conf.AccessKeySecret)
-	err := topicManager.CreateTopic(ali_mns.Beijing, "topic_test", 65536)
+	err := topicManager.CreateTopic(ali_mns.Beijing, "topic-test", 65536)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	err = topicManager.SetTopicAttributes(ali_mns.Beijing, "topic_test", 65534)
+	err = topicManager.SetTopicAttributes(ali_mns.Beijing, "topic-test", 65534)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	attr, err := topicManager.GetTopicAttributes(ali_mns.Beijing, "topic_test")
+	attr, err := topicManager.GetTopicAttributes(ali_mns.Beijing, "topic-test")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Printf("%+v\n", attr)
 	}
 
-	topics, err := topicManager.ListTopic(ali_mns.Beijing, "", 0, "topic_")
+	topics, err := topicManager.ListTopic(ali_mns.Beijing, "", 0, "topic-")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Printf("%+v\n", topics)
 	}
 
-	err = topicManager.DeleteTopic(ali_mns.Beijing, "topic_test")
+	err = topicManager.DeleteTopic(ali_mns.Beijing, "topic-test")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		fmt.Println("Topic [topic_test] deleted")
+		fmt.Println("Topic [topic-test] deleted")
 	}
 
 	// Topic Subscription
@@ -91,14 +91,14 @@ func TopicExample() {
 	}()
 
 	// Create Topic
-	err = topicManager.CreateTopic(ali_mns.Beijing, "topic_test", 65536)
+	err = topicManager.CreateTopic(ali_mns.Beijing, "topic-test", 65536)
 
 	// Subscribe to Topic
 	err = topicManager.Subscribe(ali_mns.Beijing,
-		"topic_test",
+		"topic-test",
 		"",
 		fmt.Sprintf("http://%s:8080/notifications", conf.Host),
-		"topic_test")
+		"topic-test")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -110,7 +110,7 @@ func TopicExample() {
 		conf.AccessKeyId,
 		conf.AccessKeySecret)
 
-	topic := ali_mns.NewMNSTopic("topic_test", client)
+	topic := ali_mns.NewMNSTopic("topic-test", client)
 
 	msg := ali_mns.TopicMessageSendRequest{
 		MessageBody:	[]byte("hello ali_mns"),
@@ -126,7 +126,7 @@ func TopicExample() {
 	// Wait for receive
 	wg.Wait()
 
-	err = topicManager.DeleteTopic(ali_mns.Beijing, "topic_test")
+	err = topicManager.DeleteTopic(ali_mns.Beijing, "topic-test")
 }
 
 func QueueExample() {
