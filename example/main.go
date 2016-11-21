@@ -10,6 +10,7 @@ import (
 
 type appConf struct {
 	Url             string `json:"url"`
+	AccountId	string `json:"accountid"`
 	AccessKeyId     string `json:"access_key_id"`
 	AccessKeySecret string `json:"access_key_secret"`
 }
@@ -56,15 +57,16 @@ func main() {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		fmt.Println("Topic [test] deleted\n")
+		fmt.Println("Topic [test] deleted")
 	}
 
 	// Topic Subscription
+	err = topicManager.CreateTopic(ali_mns.Beijing, "testSub", 65536)
 
 	err = topicManager.Subscribe(ali_mns.Beijing,
 		"testSub",
-		//fmt.Sprintf("acs:mns:%s:%s:queues/%s", ali_mns.Beijing, "1340859151301362", "testSub"),
-		fmt.Sprintf("mail:directmail:{hongliang@neusoft.com}"),
+		"",
+		string("mail:directmail:{hongliang@neusoft.com}"),
 		"testSub")
 	if err != nil {
 		fmt.Println(err.Error())
@@ -80,7 +82,7 @@ func main() {
 
 	msg := ali_mns.TopicMessageSendRequest{
 		MessageBody:	[]byte("hello ali_mns"),
-		MessageTag:	string("no tag"),
+		MessageTag:	"",
 	}
 	resp, err := topic.SendMessage(msg)
 	if err != nil {

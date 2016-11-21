@@ -15,7 +15,7 @@ type TopicMessageResponse struct {
 type TopicMessageSendRequest struct {
 	XMLName      xml.Name    `xml:"Message" json:"message"`
 	MessageBody  Base64Bytes `xml:"MessageBody" json:"message_body"`
-	MessageTag   string      `xml:"MessageTag" json:"message_tag"`
+	MessageTag   string      `xml:"MessageTag,omitempty" json:"message_tag,omitempty"`
 }
 
 type TopicMessageSendResponse struct {
@@ -27,7 +27,7 @@ type TopicMessageSendResponse struct {
 type TopicSubscribeRequest struct {
 	XMLName		xml.Name	`xml:"Subscription" json:"-"`
 	Endpoint	string		`xml:"Endpoint" json:"endpoint"`
-	FilterTag	string		`xml:"FilterTag" json:"filter_tag"`
+	FilterTag	string		`xml:"FilterTag,omitempty" json:"filter_tag,omitempty"`
 	NotifyStrategy	string		`xml:"NotifyStrategy,omitempty" json:"notify_strategy,omitempty"`
 	NotifyContentFormat	string	`xml:"NotifyContentFormat,omitempty" json:"notify_content_format,omitempty"`
 }

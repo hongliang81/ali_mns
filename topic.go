@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"net/http"
+	"encoding/base64"
+	"io/ioutil"
 )
 
 var (
@@ -13,6 +16,7 @@ var (
 type AliMNSTopic interface {
 	Name() string
 	SendMessage(message TopicMessageSendRequest) (resp TopicMessageSendResponse, err error)
+	ParseNotification(method string, headers map[string]string, resource string) (statusCode int, err error)
 }
 
 type MNSTopic struct {
@@ -66,3 +70,37 @@ func (p *MNSTopic) SendMessage(message TopicMessageSendRequest) (resp TopicMessa
 	return
 }
 
+// Decode incoming Notification from Topic mode
+func (p *MNSTopic) ParseNotification(method string, headers map[string]string, resource string) (statusCode int, err error) {
+
+	// 获取X509证书
+	var url string
+	if url = headers["x-mns-signing-cert-url"]; url == "" {
+		// TODO
+		return
+	}
+	certUrl, err := base64.StdEncoding.DecodeString(url)
+	if err != nil {
+		// TODO
+		return
+	}
+	resp, err := http.Get(string(certUrl))
+	if err != nil {
+		// TODO
+		return
+	}
+	defer resp.Body.Close()
+
+	block, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(block))	// TODO
+
+	// 计算待签名字符串
+
+	// Authorization解密
+
+	// 认证
+
+	// 返回
+
+	return
+}

@@ -15,7 +15,7 @@ type AliTopicManager interface {
 	GetTopicAttributes(location MNSLocation, topicName string) (attr TopicAttribute, err error)
 	DeleteTopic(location MNSLocation, topicName string) (err error)
 	ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (topics Topics, err error)
-	Subscribe(location MNSLocation, topicName string, endpoint string, subscriptionName string) (err error)
+	Subscribe(location MNSLocation, topicName string, tag string, endpoint string, subscriptionName string) (err error)
 }
 
 type MNSTopicManager struct {
@@ -30,6 +30,32 @@ type MNSTopicManager struct {
 func checkTopicName(topicName string) (err error) {
 	if len(topicName) > 256 {
 		err = ERR_MNS_TOPIC_NAME_IS_TOO_LONG.New()
+		return
+	}
+	return
+}
+
+func checkTopicTag(topicTag string) (err error) {
+	if len(topicTag) > 16 {
+		err = ERR_MNS_TAG_NAME_IS_TOO_LONG.New()
+		return
+	}
+	return
+}
+
+func checkEndpoint(endpoint string) (err error) {
+	// Only HTTP Endpoint for now
+	if strings.Compare(endpoint[0:7], "http://") != 0 {
+		err = ERR_MNS_INVALID_ENDPOINT.New()
+		return
+	}
+
+	return
+}
+
+func checkSubscriptionName(subscriptionName string) (err error) {
+	if len(subscriptionName) > 256 {
+		err = ERR_MNS_SUBSCRIPTION_NAME_IS_TOO_LONG.New()
 		return
 	}
 	return
@@ -190,7 +216,7 @@ func (p *MNSTopicManager) ListTopic(location MNSLocation, nextMarker string, ret
 	return
 }
 
-func (p *MNSTopicManager) Subscribe(location MNSLocation, topicName string, endpoint string, subscriptionName string) (err error) {
+func (p *MNSTopicManager) Subscribe(location MNSLocation, topicName string, tag string, endpoint string, subscriptionName string) (err error) {
 
 	topicName = strings.TrimSpace(topicName)
 
@@ -198,9 +224,17 @@ func (p *MNSTopicManager) Subscribe(location MNSLocation, topicName string, endp
 		return
 	}
 
-	// TODO checkEndpoint
+	if err = checkTopicTag(tag); err != nil {
+		return
+	}
 
-	// TODO checksubscriptionName
+	//if err = checkEndpoint(endpoint); err != nil {
+	//	return
+	//}
+
+	if err = checkSubscriptionName(subscriptionName); err != nil {
+		return
+	}
 
 	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
 
@@ -208,7 +242,7 @@ func (p *MNSTopicManager) Subscribe(location MNSLocation, topicName string, endp
 
 	msg := TopicSubscribeRequest{
 		Endpoint:	endpoint,
-		FilterTag:	string("test_tag"),
+		FilterTag:	tag,
 	}
 
 	_, err = send(cli, p.decoder, PUT, nil, msg, fmt.Sprintf("topics/%s/subscriptions/%s", topicName, subscriptionName), nil)
