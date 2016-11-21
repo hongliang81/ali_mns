@@ -93,11 +93,11 @@ func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode in
 		case "date":
 			date = v[0]
 		case "x-mns-request-id":
-			mnsSplit = append(mnsSplit, v[0])
+			mnsSplit = append(mnsSplit, k1 + ":" + v[0])
 		case "x-mns-version":
-			mnsSplit = append(mnsSplit, v[0])
+			mnsSplit = append(mnsSplit, k1 + ":" + v[0])
 		case "x-mns-signing-cert-url":
-			mnsSplit = append(mnsSplit, v[0])
+			mnsSplit = append(mnsSplit, k1 + ":" + v[0])
 			url = v[0]
 		}
 	}
