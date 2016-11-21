@@ -68,7 +68,9 @@ func main() {
 	go func() {
 		http.HandleFunc("/notifications", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("in handler func")
-			ali_mns.ParseNotification(r.Method, r.Header, r.RequestURI)
+
+			var msg ali_mns.TopicNotification
+			ali_mns.ParseNotification(r, &msg)
 		})
 		http.ListenAndServe(":8080", nil)
 	}()

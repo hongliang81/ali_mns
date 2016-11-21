@@ -56,3 +56,7 @@ type Topics struct {
 	Topics     []Topic  `xml:"Topic" json:"topics"`
 	NextMarker string   `xml:"NextMarker" json:"next_marker"`
 }
+
+type TopicNotification struct {
+
+}

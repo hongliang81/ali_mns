@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"net/http"
 )
 
 var (
@@ -67,17 +68,33 @@ func (p *MNSTopic) SendMessage(message TopicMessageSendRequest) (resp TopicMessa
 }
 
 // Decode incoming Notification from Topic mode
-func ParseNotification(method string, headers map[string][]string, resource string) (statusCode int, err error) {
+func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode int, err error) {
 
-	fmt.Printf("method: %s\n", method)
-	fmt.Printf("headers:\n%+v\n", headers)
-	fmt.Printf("resource: %s\n", resource)
+	// 整理Header数据
+	var url, contentMd5, contentType, date string
+	var mnsSplit = make([]string, 0, 4)
+
+	for k, v := range req.Header {
+		switch k1 := strings.ToLower(k); k1 {
+		case "content-md5":
+			contentMd5 = v[0]
+		case "content-type":
+			contentType = strings.ToLower(v[0])
+		case "date":
+			contentType = v[0]
+		case "x-mns-request-id":
+			mnsSplit = append(mnsSplit, v[0])
+		case "x-mns-version":
+			mnsSplit = append(mnsSplit, v[0])
+		case "x-mns-signing-cert-url":
+			mnsSplit = append(mnsSplit, v[0])
+			url = v[0]
+		}
+	}
+
+	fmt.Printf("url[%s]\nmd5[%s]\ntype[%s]\ndate[%s]\n", url, contentMd5, contentType, date)
+
 	//// 获取X509证书
-	//var url string
-	//if url = headers["x-mns-signing-cert-url"]; url == "" {
-	//	// TODO
-	//	return
-	//}
 	//certUrl, err := base64.StdEncoding.DecodeString(url)
 	//if err != nil {
 	//	// TODO
