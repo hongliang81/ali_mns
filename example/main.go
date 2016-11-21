@@ -65,11 +65,13 @@ func main() {
 	// Topic Subscription
 
 	// Create Endpoint, Listen on 80 port
-	http.HandleFunc("/notifications", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("in handler func")
-		ali_mns.ParseNotification(r.Method, r.Header, r.RequestURI)
-	})
-	http.ListenAndServe(":80", nil)
+	go func() {
+		http.HandleFunc("/notifications", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Println("in handler func")
+			ali_mns.ParseNotification(r.Method, r.Header, r.RequestURI)
+		})
+		http.ListenAndServe(":8080", nil)
+	}()
 
 	// Create Topic
 	err = topicManager.CreateTopic(ali_mns.Beijing, "testSub", 65536)
