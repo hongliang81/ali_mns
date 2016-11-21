@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"net/http"
-	"encoding/base64"
-	"io/ioutil"
 )
 
 var (
