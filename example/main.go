@@ -72,7 +72,7 @@ func main() {
 			var msg ali_mns.TopicNotification
 			ali_mns.ParseNotification(ali_mns.NewAliMNSDecoder(), r, &msg)
 
-			fmt.Printf("notification[\n%v\n", msg)
+			fmt.Printf("notification[\n%+v\n", msg)
 		})
 		http.ListenAndServe(":8080", nil)
 	}()

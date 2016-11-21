@@ -228,9 +228,9 @@ func (p *MNSTopicManager) Subscribe(location MNSLocation, topicName string, tag 
 		return
 	}
 
-	//if err = checkEndpoint(endpoint); err != nil {
-	//	return
-	//}
+	if err = checkEndpoint(endpoint); err != nil {
+		return
+	}
 
 	if err = checkSubscriptionName(subscriptionName); err != nil {
 		return
