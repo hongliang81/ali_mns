@@ -72,26 +72,29 @@ func (p *MNSTopic) SendMessage(message TopicMessageSendRequest) (resp TopicMessa
 // Decode incoming Notification from Topic mode
 func ParseNotification(method string, headers map[string][]string, resource string) (statusCode int, err error) {
 
-	// 获取X509证书
-	var url string
-	if url = headers["x-mns-signing-cert-url"][0]; url == "" {
-		// TODO
-		return
-	}
-	certUrl, err := base64.StdEncoding.DecodeString(url)
-	if err != nil {
-		// TODO
-		return
-	}
-	resp, err := http.Get(string(certUrl))
-	if err != nil {
-		// TODO
-		return
-	}
-	defer resp.Body.Close()
-
-	block, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(block))	// TODO
+	fmt.Printf("method: %s\n", method)
+	fmt.Printf("headers:\n%+v\n", headers)
+	fmt.Printf("resource: %s\n", resource)
+	//// 获取X509证书
+	//var url string
+	//if url = headers["x-mns-signing-cert-url"]; url == "" {
+	//	// TODO
+	//	return
+	//}
+	//certUrl, err := base64.StdEncoding.DecodeString(url)
+	//if err != nil {
+	//	// TODO
+	//	return
+	//}
+	//resp, err := http.Get(string(certUrl))
+	//if err != nil {
+	//	// TODO
+	//	return
+	//}
+	//defer resp.Body.Close()
+	//
+	//block, _ := ioutil.ReadAll(resp.Body)
+	//fmt.Println(string(block))	// TODO
 
 	// 计算待签名字符串
 

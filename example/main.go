@@ -86,7 +86,7 @@ func main() {
 	err = topicManager.Subscribe(ali_mns.Beijing,
 		"testSub",
 		"",
-		string("http://123.56.200.181/notifications"),
+		string("http://123.56.200.181:8080/notifications"),
 		"testSub")
 	if err != nil {
 		fmt.Println(err.Error())
