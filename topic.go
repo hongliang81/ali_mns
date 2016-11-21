@@ -5,6 +5,14 @@ import (
 	"os"
 	"strings"
 	"net/http"
+	"encoding/base64"
+	"io/ioutil"
+	"encoding/pem"
+	"crypto/x509"
+	"sort"
+	"crypto/rsa"
+	"crypto/rand"
+	"bytes"
 )
 
 var (
@@ -71,17 +79,19 @@ func (p *MNSTopic) SendMessage(message TopicMessageSendRequest) (resp TopicMessa
 func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode int, err error) {
 
 	// 整理Header数据
-	var url, contentMd5, contentType, date string
+	var authorization, url, contentMd5, contentType, date string
 	var mnsSplit = make([]string, 0, 4)
 
 	for k, v := range req.Header {
 		switch k1 := strings.ToLower(k); k1 {
+		case "authorization":
+			authorization = v[0]
 		case "content-md5":
 			contentMd5 = v[0]
 		case "content-type":
 			contentType = strings.ToLower(v[0])
 		case "date":
-			contentType = v[0]
+			date = v[0]
 		case "x-mns-request-id":
 			mnsSplit = append(mnsSplit, v[0])
 		case "x-mns-version":
@@ -92,27 +102,50 @@ func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode in
 		}
 	}
 
-	fmt.Printf("url[%s]\nmd5[%s]\ntype[%s]\ndate[%s]\n", url, contentMd5, contentType, date)
+	// 生成待签名字符串
+	sort.Strings(mnsSplit)
+	var str2Sign string = req.Method + "\n" + contentMd5 + "\n" + contentType + "\n" + date + "\n"
+	for _, str := range mnsSplit {
+		str2Sign += str + "\n"
+	}
+	str2Sign += req.RequestURI
+	fmt.Printf("str2sign:[\n%s\n]\n", str2Sign)
 
-	//// 获取X509证书
-	//certUrl, err := base64.StdEncoding.DecodeString(url)
-	//if err != nil {
-	//	// TODO
-	//	return
-	//}
-	//resp, err := http.Get(string(certUrl))
-	//if err != nil {
-	//	// TODO
-	//	return
-	//}
-	//defer resp.Body.Close()
-	//
-	//block, _ := ioutil.ReadAll(resp.Body)
-	//fmt.Println(string(block))	// TODO
+	// 获取X509证书
+	certUrl, err := base64.StdEncoding.DecodeString(url)
+	if err != nil {
+		// TODO
+		return
+	}
+	resp, err := http.Get(string(certUrl))
+	if err != nil {
+		// TODO
+		return
+	}
+	defer resp.Body.Close()
 
-	// 计算待签名字符串
+	block, _ := ioutil.ReadAll(resp.Body)
+
+	p, _ := pem.Decode(block)
+	cert, err := x509.ParseCertificate(p.Bytes)
 
 	// Authorization解密
+	sig2Check, err := base64.StdEncoding.DecodeString(authorization)
+	if err != nil {
+		fmt.Printf("sig2Check解密错误\n")
+		return
+	}
+
+	if _, ok := cert.PublicKey.(*rsa.PublicKey); !ok {
+		fmt.Printf("密钥不对啊\n")
+		return
+	}
+
+	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, cert.PublicKey.(*rsa.PublicKey), []byte(str2Sign))
+	fmt.Printf("Authorization解密后[%s], err[%v]\n", encrypted, err)
+
+	res := bytes.Compare(sig2Check, encrypted)
+	fmt.Printf("比较结果[%d]\n", res)
 
 	// 认证
 
