@@ -58,5 +58,14 @@ type Topics struct {
 }
 
 type TopicNotification struct {
-
+	XMLName		xml.Name	`xml:"Notification" json:"-"`
+	TopicOwner	string		`xml:"TopicOwner" json:"topic_owner"`
+	TopicName	string		`xml:"TopicName" json:"topic_name"`
+	Subscriber	string		`xml:"Subscriber" json:"subscriber"`
+	SubscriptionName	string	`xml:"SubscriptionName" json:"subscription_name"`
+	MessageId	string		`xml:"MessageId" json:"message_id"`
+	Message		string		`xml:"Message" json:"message"`
+	MessageMD5	string		`xml:"MessageMD5" json:"message_md5"`
+	MessageTag	string		`xml:"MessageTag" json:"message_tag"`
+	PublishTime	int64		`xml:"PublishTime" json:"publish_time"`
 }

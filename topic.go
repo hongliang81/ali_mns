@@ -10,10 +10,14 @@ import (
 	"encoding/pem"
 	"crypto/x509"
 	"sort"
+	"bytes"
+	"github.com/gogap/errors"
 )
 
 var (
 	//DefaultTopicQPSLimit      int32 = 2000
+	certUrlCached	[]byte
+	certCached	*x509.Certificate
 )
 
 type AliMNSTopic interface {
@@ -73,7 +77,10 @@ func (p *MNSTopic) SendMessage(message TopicMessageSendRequest) (resp TopicMessa
 }
 
 // Decode incoming Notification from Topic mode
-func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode int, err error) {
+func ParseNotification(decoder MNSDecoder, req *http.Request, msg *TopicNotification) (statusCode int, err error) {
+
+	// 初始化返回码
+	statusCode = 403
 
 	// 整理Header数据
 	var authorization, url, contentMd5, contentType, date string
@@ -106,17 +113,48 @@ func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode in
 		str2Sign += str + "\n"
 	}
 	str2Sign += req.RequestURI
-	fmt.Printf("str2sign:[\n%s\n]\n", str2Sign)
 
-	// 获取X509证书
+	// 判断是否需要重新获取X509证书
 	certUrl, err := base64.StdEncoding.DecodeString(url)
 	if err != nil {
-		// TODO
+		err = ERR_DECODE_URL_FAILED.New(errors.Params{"err": err, "url": url})
 		return
 	}
+
+	// 获取证书并缓存
+	if bytes.Compare(certUrlCached, certUrl) != 0 {
+		refreshCert(certUrl)
+		certUrlCached = certUrl
+	}
+
+	// Authorization解密
+	sig2Check, err := base64.StdEncoding.DecodeString(authorization)
+	if err != nil {
+		err = ERR_MNS_SIGNATURE_DOES_NOT_MATCH.New(errors.Params{"err": err})
+		return
+	}
+
+	// 校验签名
+	err = certCached.CheckSignature(x509.SHA1WithRSA, []byte(str2Sign), sig2Check)
+	if err != nil {
+		err = ERR_MNS_SIGNATURE_DOES_NOT_MATCH.New(errors.Params{"err": err})
+		return
+	}
+	statusCode = 204
+
+	// 解析消息
+	if e := decoder.Decode(req.Body, msg); e != nil {
+		err = ERR_UNMARSHAL_NOTIFICATION_FAILED.New(errors.Params{"err": e})
+		return
+	}
+
+	return
+}
+
+// Update certificate
+func refreshCert(certUrl []byte) {
 	resp, err := http.Get(string(certUrl))
 	if err != nil {
-		// TODO
 		return
 	}
 	defer resp.Body.Close()
@@ -124,26 +162,8 @@ func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode in
 	block, _ := ioutil.ReadAll(resp.Body)
 
 	p, _ := pem.Decode(block)
-	cert, err := x509.ParseCertificate(p.Bytes)
+	certCached, err = x509.ParseCertificate(p.Bytes)
 	if err != nil {
-		fmt.Printf("生成证书失败\n")
 		return
 	}
-
-
-	// Authorization解密
-	sig2Check, err := base64.StdEncoding.DecodeString(authorization)
-	if err != nil {
-		fmt.Printf("sig2Check解密错误\n")
-		return
-	}
-
-	err = cert.CheckSignature(x509.SHA1WithRSA, []byte(str2Sign), sig2Check)
-	fmt.Printf("校验结果[%v]\n", err)
-
-	// 认证
-
-	// 返回
-
-	return
 }

@@ -70,4 +70,7 @@ var (
 	ERR_MNS_TAG_NAME_IS_TOO_LONG			= errors.TN(ALI_MNS_ERR_NS, 155, "tag name is too long, the max length is 16")
 	ERR_MNS_INVALID_ENDPOINT			= errors.TN(ALI_MNS_ERR_NS, 156, "invalid endpoint, only http endpoint is supported for now")
 	ERR_MNS_SUBSCRIPTION_NAME_IS_TOO_LONG		= errors.TN(ALI_MNS_ERR_NS, 157, "subscription name is too long, the max length is 256")
+
+	ERR_DECODE_URL_FAILED				= errors.TN(ALI_MNS_ERR_NS, 158, "decode URL failed, {{.err}}, url: \"{{.url}}\"")
+	ERR_UNMARSHAL_NOTIFICATION_FAILED		= errors.TN(ALI_MNS_ERR_NS, 158, "unmarshal notification failed, {{.err}}")
 )
