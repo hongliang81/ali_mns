@@ -82,7 +82,7 @@ func TopicExample() {
 		http.HandleFunc("/notifications", func(w http.ResponseWriter, r *http.Request) {
 
 			var msg ali_mns.TopicNotification
-			ali_mns.ParseNotification(ali_mns.NewAliMNSDecoder(), r, &msg)
+			ali_mns.ParseNotification(r, &msg)
 
 			fmt.Printf("receive notification[\n%+v\n", msg)
 

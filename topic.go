@@ -77,7 +77,7 @@ func (p *MNSTopic) SendMessage(message TopicMessageSendRequest) (resp TopicMessa
 }
 
 // Decode incoming Notification from Topic mode
-func ParseNotification(decoder MNSDecoder, req *http.Request, msg *TopicNotification) (statusCode int, err error) {
+func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode int, err error) {
 
 	// 初始化返回码
 	statusCode = 403
@@ -143,10 +143,13 @@ func ParseNotification(decoder MNSDecoder, req *http.Request, msg *TopicNotifica
 	statusCode = 204
 
 	// 解析消息
+	decoder := NewAliMNSDecoder()
 	if e := decoder.Decode(req.Body, msg); e != nil {
 		err = ERR_UNMARSHAL_NOTIFICATION_FAILED.New(errors.Params{"err": e})
 		return
 	}
+
+	// TODO 检查MD5
 
 	return
 }
