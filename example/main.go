@@ -10,7 +10,6 @@ import (
 	"time"
 	"github.com/gogap/logs"
 	"sync"
-	"encoding/base64"
 )
 
 type appConf struct {
