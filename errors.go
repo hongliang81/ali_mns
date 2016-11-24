@@ -73,4 +73,5 @@ var (
 
 	ERR_DECODE_URL_FAILED				= errors.TN(ALI_MNS_ERR_NS, 158, "decode URL failed, {{.err}}, url: \"{{.url}}\"")
 	ERR_UNMARSHAL_NOTIFICATION_FAILED		= errors.TN(ALI_MNS_ERR_NS, 159, "unmarshal notification failed, {{.err}}")
+	ERR_MNS_INVALID_NOTIFICATION_HEADER		= errors.TN(ALI_MNS_ERR_NS, 160, "invalid notification header.")
 )

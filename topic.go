@@ -76,34 +76,43 @@ func (p *MNSTopic) SendMessage(message TopicMessageSendRequest) (resp TopicMessa
 	return
 }
 
-// Decode incoming Notification from Topic mode
-func ParseNotification(decoder MNSDecoder, req *http.Request, msg *TopicNotification) (statusCode int, err error) {
-
-	// 初始化返回码
-	statusCode = 403
+// Verify Notification Signature
+func VerifyNotificationSignature(req *http.Request) error {
 
 	// 整理Header数据
 	var authorization, url, contentMd5, contentType, date string
 	var mnsSplit = make([]string, 0, 4)
 
+	var count int = 0
 	for k, v := range req.Header {
 		switch k1 := strings.ToLower(k); k1 {
 		case "authorization":
+			count++
 			authorization = v[0]
 		case "content-md5":
+			count++
 			contentMd5 = v[0]
 		case "content-type":
+			count++
 			contentType = strings.ToLower(v[0])
 		case "date":
+			count++
 			date = v[0]
 		case "x-mns-request-id":
+			count++
 			mnsSplit = append(mnsSplit, k1 + ":" + v[0])
 		case "x-mns-version":
+			count++
 			mnsSplit = append(mnsSplit, k1 + ":" + v[0])
 		case "x-mns-signing-cert-url":
+			count++
 			mnsSplit = append(mnsSplit, k1 + ":" + v[0])
 			url = v[0]
 		}
+	}
+
+	if count < 7 {
+		return ERR_MNS_INVALID_NOTIFICATION_HEADER.New(nil)
 	}
 
 	// 生成待签名字符串
@@ -117,8 +126,8 @@ func ParseNotification(decoder MNSDecoder, req *http.Request, msg *TopicNotifica
 	// 判断是否需要重新获取X509证书
 	certUrl, err := base64.StdEncoding.DecodeString(url)
 	if err != nil {
-		err = ERR_DECODE_URL_FAILED.New(errors.Params{"err": err, "url": url})
-		return
+		return ERR_DECODE_URL_FAILED.New(errors.Params{"err": err, "url": url})
+
 	}
 
 	// 获取证书并缓存
@@ -130,23 +139,38 @@ func ParseNotification(decoder MNSDecoder, req *http.Request, msg *TopicNotifica
 	// Authorization解密
 	sig2Check, err := base64.StdEncoding.DecodeString(authorization)
 	if err != nil {
-		err = ERR_MNS_SIGNATURE_DOES_NOT_MATCH.New(errors.Params{"err": err})
-		return
+		return ERR_MNS_SIGNATURE_DOES_NOT_MATCH.New(errors.Params{"err": err})
 	}
 
 	// 校验签名
 	err = certCached.CheckSignature(x509.SHA1WithRSA, []byte(str2Sign), sig2Check)
 	if err != nil {
-		err = ERR_MNS_SIGNATURE_DOES_NOT_MATCH.New(errors.Params{"err": err})
+		return ERR_MNS_SIGNATURE_DOES_NOT_MATCH.New(errors.Params{"err": err})
+	}
+
+	return nil
+}
+
+// Decode incoming Notification from Topic mode
+func ParseNotification(req *http.Request, msg *TopicNotification) (statusCode int, err error) {
+
+	// 校验签名
+	err = VerifyNotificationSignature(req)
+	if err != nil {
+		statusCode = 403
 		return
 	}
+
 	statusCode = 204
 
 	// 解析消息
+	decoder := NewAliMNSDecoder()
 	if e := decoder.Decode(req.Body, msg); e != nil {
 		err = ERR_UNMARSHAL_NOTIFICATION_FAILED.New(errors.Params{"err": e})
 		return
 	}
+
+	// TODO 检查MD5
 
 	return
 }
