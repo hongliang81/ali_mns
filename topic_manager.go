@@ -100,7 +100,7 @@ func (p *MNSTopicManager) CreateTopic(location MNSLocation, topicName string, ma
 		MaxMessageSize:         maxMessageSize,
 	}
 
-	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+	url := GenUrl(p.ownerId, location)
 
 	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
 
@@ -142,7 +142,7 @@ func (p *MNSTopicManager) SetTopicAttributes(location MNSLocation, topicName str
 		MaxMessageSize:         maxMessageSize,
 	}
 
-	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+	url := GenUrl(p.ownerId, location)
 
 	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
 
@@ -157,7 +157,7 @@ func (p *MNSTopicManager) GetTopicAttributes(location MNSLocation, topicName str
 		return
 	}
 
-	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+	url := GenUrl(p.ownerId, location)
 
 	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
 
@@ -173,7 +173,7 @@ func (p *MNSTopicManager) DeleteTopic(location MNSLocation, topicName string) (e
 		return
 	}
 
-	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+	url := GenUrl(p.ownerId, location)
 
 	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
 
@@ -184,7 +184,7 @@ func (p *MNSTopicManager) DeleteTopic(location MNSLocation, topicName string) (e
 
 func (p *MNSTopicManager) ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (topics Topics, err error) {
 
-	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+	url := GenUrl(p.ownerId, location)
 
 	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
 
@@ -236,7 +236,7 @@ func (p *MNSTopicManager) Subscribe(location MNSLocation, topicName string, tag 
 		return
 	}
 
-	url := fmt.Sprintf("http://%s.mns.%s.aliyuncs.com", p.ownerId, string(location))
+	url := GenUrl(p.ownerId, location)
 
 	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
 
