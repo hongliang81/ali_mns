@@ -15,7 +15,10 @@ type AliTopicManager interface {
 	GetTopicAttributes(location MNSLocation, topicName string) (attr TopicAttribute, err error)
 	DeleteTopic(location MNSLocation, topicName string) (err error)
 	ListTopic(location MNSLocation, nextMarker string, retNumber int32, prefix string) (topics Topics, err error)
+
 	Subscribe(location MNSLocation, topicName string, tag string, endpoint string, subscriptionName string) (err error)
+	Unsubscribe(location MNSLocation, topicName string, subscriptionName string) (err error)
+	GetSubscriptionAttributes(location MNSLocation, topicName, subscriptionName string) (subscription TopicSubscription, err error)
 }
 
 type MNSTopicManager struct {
@@ -246,6 +249,48 @@ func (p *MNSTopicManager) Subscribe(location MNSLocation, topicName string, tag 
 	}
 
 	_, err = send(cli, p.decoder, PUT, nil, msg, fmt.Sprintf("topics/%s/subscriptions/%s", topicName, subscriptionName), nil)
+
+	return
+}
+
+func (p *MNSTopicManager) Unsubscribe(location MNSLocation, topicName string, subscriptionName string) (err error) {
+
+	topicName = strings.TrimSpace(topicName)
+
+	if err = checkTopicName(topicName); err != nil {
+		return
+	}
+
+	if err = checkSubscriptionName(subscriptionName); err != nil {
+		return
+	}
+
+	url := GenUrl(p.ownerId, location)
+
+	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
+
+	_, err = send(cli, p.decoder, DELETE, nil, nil, fmt.Sprintf("/topics/%s/subscriptions/%s", topicName, subscriptionName), nil)
+
+	return
+}
+
+func (p*MNSTopicManager) GetSubscriptionAttributes(location MNSLocation, topicName, subscriptionName string) (subscription TopicSubscription, err error) {
+
+	topicName = strings.TrimSpace(topicName)
+
+	if err = checkTopicName(topicName); err != nil {
+		return
+	}
+
+	if err = checkSubscriptionName(subscriptionName); err != nil {
+		return
+	}
+
+	url := GenUrl(p.ownerId, location)
+
+	cli := NewAliMNSClient(url, p.accessKeyId, p.accessKeySecret)
+
+	_, err = send(cli, p.decoder, GET, nil, nil, fmt.Sprintf("/topics/%s/subscriptions/%s", topicName, subscriptionName), &subscription)
 
 	return
 }

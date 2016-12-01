@@ -32,6 +32,19 @@ type TopicSubscribeRequest struct {
 	NotifyContentFormat	string	`xml:"NotifyContentFormat,omitempty" json:"notify_content_format,omitempty"`
 }
 
+type TopicSubscription struct {
+	XMLName		xml.Name	`xml:"Subscription" json:"-"`
+	Subscriber	string		`xml:"Subscriber" json:"subscriber"`
+	TopicOwner	string		`xml:"TopicOwner" json:"topic_owner"`
+	TopicName	string		`xml:"TopicName" json:"topic_name"`
+	Endpoint	string		`xml:"Endpoint" json:"endpoint"`
+	NotifyStrategy	string		`xml:"NotifyStrategy,omitempty" json:"notify_strategy,omitempty"`
+	NotifyContentFormat	string	`xml:"NotifyContentFormat,omitempty" json:"notify_content_format,omitempty"`
+	FilterTag	string		`xml:"FilterTag" json:"filter_tag"`
+	CreateTime	int64		`xml:"CreateTime" json:"create_time"`
+	LastModifyTime	int64		`xml:"LastModifyTime" json:"last_modify_time"`
+}
+
 type CreateTopicRequest struct {
 	XMLName                xml.Name `xml:"Topic" json:"-"`
 	MaxMessageSize         int32    `xml:"MaximumMessageSize,omitempty" json:"maximum_message_size,omitempty"`
